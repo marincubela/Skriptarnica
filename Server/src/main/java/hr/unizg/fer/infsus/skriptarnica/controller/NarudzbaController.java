@@ -16,7 +16,7 @@ public class NarudzbaController {
     private INarudzbaService narudzbaService;
 
     @GetMapping("/all")
-    public List<Narudzba> findNarudzbas() {
+    public List<Narudzba> findAllNarudzba() {
         return narudzbaService.findAll();
     }
 
