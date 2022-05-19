@@ -5,6 +5,7 @@ import hr.unizg.fer.infsus.skriptarnica.repository.UslugaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.List;
 
 @Service
@@ -21,6 +22,11 @@ public class UslugaService implements IUslugaService {
     @Override
     public Usluga find(Long Id) {
         return repository.findById(Id).orElse(null);
+    }
+
+    @Override
+    public List<Usluga> findUslugasByPonudaidIn(Collection<Long> ponudaids) {
+        return (List<Usluga>) repository.findUslugasByPonudaidIn(ponudaids);
     }
 
     @Override
