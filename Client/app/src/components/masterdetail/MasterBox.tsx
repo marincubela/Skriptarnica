@@ -8,9 +8,9 @@ import {
   Stack,
 } from "@chakra-ui/react";
 import { useState } from "react";
-import { Order } from "../service/OrdersService";
-import { EditableInfoLabel } from "./EditableInfoLabel";
-import { InfoLabel } from "./InfoLabel";
+import { Order } from "../../service/OrdersService";
+import { EditableInfoLabel } from "../util/EditableInfoLabel";
+import { InfoLabel } from "../util/InfoLabel";
 
 export const MasterBox = ({
   order,
