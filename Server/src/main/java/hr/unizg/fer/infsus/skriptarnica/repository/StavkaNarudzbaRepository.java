@@ -10,4 +10,6 @@ import java.util.List;
 @Repository
 public interface StavkaNarudzbaRepository extends CrudRepository<StavkaNarudzba, StavkaNarudzbaId> {
     List<StavkaNarudzba> findAllByNarudzbaid(Long NarudzbaId);
+
+    long deleteStavkaNarudzbaByNarudzbaidAndRbrstavka(Long narudzbaid, Long rbrstavka);
 }

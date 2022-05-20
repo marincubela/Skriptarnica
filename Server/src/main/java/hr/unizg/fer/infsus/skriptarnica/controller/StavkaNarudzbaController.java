@@ -1,13 +1,14 @@
 package hr.unizg.fer.infsus.skriptarnica.controller;
 
-import hr.unizg.fer.infsus.skriptarnica.model.Ponuda;
+import hr.unizg.fer.infsus.skriptarnica.mapper.StavkaNarudzbaMapper;
 import hr.unizg.fer.infsus.skriptarnica.model.StavkaNarudzba;
 import hr.unizg.fer.infsus.skriptarnica.model.StavkaNarudzbaId;
-import hr.unizg.fer.infsus.skriptarnica.model.dto.StavkaN;
+import hr.unizg.fer.infsus.skriptarnica.dto.StavkaNarudzbaDto;
 import hr.unizg.fer.infsus.skriptarnica.service.IProizvodService;
 import hr.unizg.fer.infsus.skriptarnica.service.IStavkaNarudzbaService;
 import hr.unizg.fer.infsus.skriptarnica.service.IUslugaService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -26,27 +27,18 @@ public class StavkaNarudzbaController {
     @Autowired
     private IUslugaService uslugaService;
 
+    private StavkaNarudzbaMapper stavkaNarudzbaMapper = new StavkaNarudzbaMapper();
+
     @GetMapping("/{NarudzbaId}")
-    public List<StavkaN> findAllByNarudzbaId(@PathVariable String NarudzbaId) {
-        List<StavkaN> result = new ArrayList<>();
+    public List<StavkaNarudzbaDto> findAllByNarudzbaId(@PathVariable String NarudzbaId) {
+        List<StavkaNarudzbaDto> result = new ArrayList<>();
 
-        var narudzbe = stavkaNarudzbaService.findByNarudzbaId(Long.parseLong(NarudzbaId));
+        var stavke = stavkaNarudzbaService.findByNarudzbaId(Long.parseLong(NarudzbaId));
 
-        for (var nar : narudzbe) {
-            StavkaN stavka = new StavkaN();
-            stavka.setNarudzbaid(nar.getNarudzbaid());
-            stavka.setRbrstavka(nar.getRbrstavka());
-            stavka.setPonudaid(nar.getPonudaid());
-            stavka.setJedcijena(nar.getJedcijena());
-            stavka.setKolicina(nar.getKolicina());
-
+        for (var stavka : stavke) {
             var proizvod = proizvodService.find(stavka.getPonudaid());
             var usluga = uslugaService.find(stavka.getPonudaid());
-
-            stavka.setProizvod(proizvod);
-            stavka.setUsluga(usluga);
-
-            result.add(stavka);
+            result.add(stavkaNarudzbaMapper.mapEntitiesToDto(stavka, proizvod, usluga));
         }
 
         return result;
@@ -57,12 +49,12 @@ public class StavkaNarudzbaController {
         return stavkaNarudzbaService.findAll();
     }
 
-    @PostMapping("/addStavka")
+    @PostMapping("/")
     StavkaNarudzba addStavka(@RequestBody StavkaNarudzba newStavkaNarudzba) {
         return stavkaNarudzbaService.save(newStavkaNarudzba);
     }
 
-    @PutMapping("/updateStavkas")
+    @PutMapping("/")
     public List<StavkaNarudzba> update(@RequestBody List<StavkaNarudzba> list) {
         List<StavkaNarudzba> result = new ArrayList<>();
 
@@ -77,8 +69,9 @@ public class StavkaNarudzbaController {
         return result;
     }
 
-    @DeleteMapping("/deleteStavka")
-    public void deleteProizvod(@RequestBody StavkaNarudzbaId Id) {
-        stavkaNarudzbaService.deleteById(Id);
+    @DeleteMapping("/")
+    @Transactional
+    public long deleteProizvod(@RequestBody StavkaNarudzbaId Id) {
+        return stavkaNarudzbaService.deleteStavkaNarudzbaByNarudzbaidAndRbrstavka(Id.getNarudzbaid(), Id.getRbrstavka());
     }
 }

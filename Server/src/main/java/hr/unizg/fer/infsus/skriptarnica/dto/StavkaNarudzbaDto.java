@@ -1,9 +1,9 @@
-package hr.unizg.fer.infsus.skriptarnica.model.dto;
+package hr.unizg.fer.infsus.skriptarnica.dto;
 
 import hr.unizg.fer.infsus.skriptarnica.model.Proizvod;
 import hr.unizg.fer.infsus.skriptarnica.model.Usluga;
 
-public class StavkaN {
+public class StavkaNarudzbaDto {
 
     private Long narudzbaid;
     private Long rbrstavka;

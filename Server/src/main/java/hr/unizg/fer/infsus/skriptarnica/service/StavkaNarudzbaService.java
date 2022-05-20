@@ -40,7 +40,7 @@ public class StavkaNarudzbaService implements IStavkaNarudzbaService {
     }
 
     @Override
-    public void deleteById(StavkaNarudzbaId Id) {
-        repository.deleteById(Id);
+    public long deleteStavkaNarudzbaByNarudzbaidAndRbrstavka(Long narudzbaid, Long rbrstavka) {
+        return repository.deleteStavkaNarudzbaByNarudzbaidAndRbrstavka(narudzbaid, rbrstavka);
     }
 }

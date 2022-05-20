@@ -17,5 +17,5 @@ public interface IStavkaNarudzbaService {
 
     StavkaNarudzba update(StavkaNarudzbaId Id, StavkaNarudzba narudzba);
 
-    void deleteById(StavkaNarudzbaId Id);
+    long deleteStavkaNarudzbaByNarudzbaidAndRbrstavka(Long narudzbaid, Long rbrstavka);
 }

@@ -15,6 +15,22 @@ public class StavkaNarudzbaId implements Serializable {
         this.rbrstavka = rbrstavka;
     }
 
+    public Long getNarudzbaid() {
+        return narudzbaid;
+    }
+
+    public void setNarudzbaid(Long narudzbaid) {
+        this.narudzbaid = narudzbaid;
+    }
+
+    public Long getRbrstavka() {
+        return rbrstavka;
+    }
+
+    public void setRbrstavka(Long rbrstavka) {
+        this.rbrstavka = rbrstavka;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
