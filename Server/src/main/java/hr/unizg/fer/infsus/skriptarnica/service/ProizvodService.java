@@ -5,7 +5,6 @@ import hr.unizg.fer.infsus.skriptarnica.repository.ProizvodRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
 import java.util.List;
 
 @Service
@@ -22,11 +21,6 @@ public class ProizvodService implements IProizvodService {
     @Override
     public Proizvod find(Long Id) {
         return repository.findById(Id).orElse(null);
-    }
-
-    @Override
-    public List<Proizvod> findProizvodsByPonudaidIn(Collection<Long> ponudaids) {
-        return (List<Proizvod>) repository.findProizvodsByPonudaidIn(ponudaids);
     }
 
     @Override
