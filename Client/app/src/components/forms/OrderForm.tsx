@@ -1,3 +1,4 @@
+import { AddIcon, MinusIcon, PlusSquareIcon } from "@chakra-ui/icons";
 import {
   FormLabel,
   FormControl,
@@ -6,6 +7,13 @@ import {
   Box,
   Select,
   Heading,
+  Stack,
+  Flex,
+  OrderedList,
+  UnorderedList,
+  ListItem,
+  IconButton,
+  Text,
 } from "@chakra-ui/react";
 import React, { FunctionComponent, useState } from "react";
 
@@ -31,21 +39,24 @@ type AvailableItem = {
   name: string;
 };
 
-const mockAvailableItems: Array<AvailableItem> = [
-  { id: 1, name: "Nalivpero" },
-  { id: 2, name: "Bilježnica" },
-  { id: 3, name: "Uvez rada" },
-];
-
+const mockAvailableItems = new Map<number, AvailableItem>([
+  [1, { id: 1, name: "Nalivpero" }],
+  [2, { id: 2, name: "Bilježnica" }],
+  [3, { id: 3, name: "Uvez rada" }],
+  [4, { id: 4, name: "Knjiga" }],
+  [5, { id: 5, name: "Žvake" }],
+]);
 export const OrderForm: FunctionComponent = () => {
   const [employees, setEmployees] = useState<Array<Employee>>(mockEmployees);
   const [availableItems, setAvailableItems] =
-    useState<Array<AvailableItem>>(mockAvailableItems);
+    useState<Map<number, AvailableItem>>(mockAvailableItems);
 
   const [selectedEmployee, setSelectedEmployee] = useState<Employee>();
   const [email, setEmail] = useState("");
-  const [items, setItems] = useState<Map<number, number>>(
-    new Map<number, number>(availableItems.map((i) => [i.id, 0]))
+  const [selectedItems, setSelectedItems] = useState<Map<number, number>>(
+    new Map<number, number>(
+      Array.from(availableItems).map(([id, _]) => [id, 0])
+    )
   );
 
   const [errorMessage, setErrorMessage] = useState("");
@@ -76,7 +87,7 @@ export const OrderForm: FunctionComponent = () => {
       return;
     }
 
-    if (items?.size == 0) {
+    if (selectedItems?.size == 0) {
       handleError("Morate unijeti barem 1 proizvod!");
       return;
     }
@@ -84,7 +95,7 @@ export const OrderForm: FunctionComponent = () => {
     console.log(
       `Email: ${email}, Djelatnik: ${JSON.stringify(
         selectedEmployee
-      )}, Proizvodi: ${JSON.stringify([...items])}`
+      )}, Proizvodi: ${JSON.stringify([...selectedItems])}`
     );
   };
 
@@ -92,14 +103,14 @@ export const OrderForm: FunctionComponent = () => {
     setSelectedEmployee(employee);
   };
 
-  const handleItemChange = (item: Item) => {
-    let currentItems = items;
+  const updateItemQuantity = (id: number, changeBy: number) => {
+    let currentSelectedItems = new Map<number, number>(selectedItems);
 
-    currentItems?.set(item.id, currentItems?.get(item.id)! + 1);
+    currentSelectedItems.set(id, currentSelectedItems.get(id)! + changeBy);
 
-    console.log(`ITEm ${currentItems.get(item.id)}`);
+    console.log(currentSelectedItems);
 
-    setItems(currentItems);
+    setSelectedItems(currentSelectedItems);
   };
 
   return (
@@ -110,48 +121,93 @@ export const OrderForm: FunctionComponent = () => {
           handleSubmit();
         }}
       >
-        <FormControl isRequired>
-          <FormLabel>Email</FormLabel>
-          <Input
-            onChange={(event) => setEmail(event.target.value)}
-            type="email"
-            placeholder="kupac@skrpt.hr"
-          />
-        </FormControl>
-        <FormControl mt={6} isRequired>
-          <FormLabel>Djelatnik</FormLabel>
-          <Select
-            onChange={(event) =>
-              handleEmployeeChange(JSON.parse(event.target.value))
-            }
-          >
-            {employees.map((employee) => {
-              return (
-                <option value={JSON.stringify(employee)}>
-                  {employee.name}
-                </option>
-              );
-            })}
-          </Select>
-        </FormControl>
-        <FormControl mt={6} isRequired>
-          <FormLabel>Proizvod</FormLabel>
-          <Select
-            onChange={(event) =>
-              handleItemChange(JSON.parse(event.target.value))
-            }
-          >
-            {availableItems.map((item) => {
-              return <option value={JSON.stringify(item)}>{item.name}</option>;
-            })}
-          </Select>
-        </FormControl>
+        <Stack direction={{ base: "column", md: "row" }} spacing={8}>
+          <Flex flex={1} direction={"column"}>
+            <FormControl isRequired>
+              <FormLabel>Email</FormLabel>
+              <Input
+                onChange={(event) => setEmail(event.target.value)}
+                type="email"
+                placeholder="kupac@skrpt.hr"
+              />
+            </FormControl>
+            <FormControl mt={6} isRequired>
+              <FormLabel>Djelatnik</FormLabel>
+              <Select
+                onChange={(event) =>
+                  handleEmployeeChange(JSON.parse(event.target.value))
+                }
+              >
+                {employees.map((employee) => {
+                  return (
+                    <option value={JSON.stringify(employee)}>
+                      {employee.name}
+                    </option>
+                  );
+                })}
+              </Select>
+            </FormControl>
+            <FormControl mt={6} isRequired>
+              <FormLabel>Proizvod</FormLabel>
+              <Select
+                onChange={(event) =>
+                  updateItemQuantity(parseInt(event.target.value), 1)
+                }
+              >
+                {Array.from(availableItems).map(([id, item]) => {
+                  return <option value={id}>{item.name}</option>;
+                })}
+              </Select>
+            </FormControl>
+          </Flex>
+          <Flex flex={1}>
+            <UnorderedList>
+              {Array.from(selectedItems)
+                .filter(([id, quantity]) => {
+                  return quantity > 0;
+                })
+                .map(([id, quantity]) => {
+                  return (
+                    <Box
+                      scrollBehavior={"smooth"}
+                      display={"flex"}
+                      flexDirection={"row"}
+                      alignItems={"center"}
+                      p={8}
+                    >
+                      <IconButton
+                        icon={<MinusIcon />}
+                        aria-label="Minus"
+                        onClick={(event) => {
+                          if (quantity > 0) updateItemQuantity(id, -1);
+                        }}
+                      />
+                      <Text
+                      w={"full"}
+                        mx={4}
+                        fontSize={{ base: "lg", md: "2xl" }}
+                        textAlign={"center"}
+                      >
+                        {availableItems.get(id)?.name}: {quantity}
+                      </Text>
+                      <IconButton
+                        icon={<AddIcon />}
+                        aria-label="Plus"
+                        onClick={(event) => {
+                          updateItemQuantity(id, 1);
+                        }}
+                      />
+                    </Box>
+                  );
+                })}
+            </UnorderedList>
+          </Flex>
+        </Stack>
         {errorMessage.length > 0 && (
           <Heading color={"red.600"}>{errorMessage}</Heading>
         )}
-
         <Button width="full" mt={4} type="submit">
-          Sign In
+          Dodaj narudžbu
         </Button>
       </form>
     </Box>
