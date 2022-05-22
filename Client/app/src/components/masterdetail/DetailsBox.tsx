@@ -1,5 +1,6 @@
 import { MinusIcon, AddIcon, CheckIcon, EditIcon } from "@chakra-ui/icons";
 import * as chakra from "@chakra-ui/react";
+import { Flex } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { AvailableItem } from "../../models/AvailableItem";
 import { OrderDetails } from "../../models/OrderDetails";
@@ -108,82 +109,80 @@ export const DetailsBox = ({
 
   return (
     <chakra.Stack p={2}>
-      <chakra.UnorderedList>
-        {orderDetails
-          .filter((details) => {
-            return details.quantity > 0;
-          })
-          .map((orderDetails) => {
-            return (
-              <chakra.Box
-                key={orderDetails.offerId}
-                as={chakra.Flex}
-                align={"center"}
-                justify={"center"}
-                p={{ base: 2, md: 8 }}
-              >
-                {orderDetails.product && (
-                  <chakra.Text
-                    w={"full"}
-                    mx={{ base: 2, md: 4 }}
-                    fontSize={{ base: "lg", md: "2xl" }}
-                    textAlign={"center"}
-                  >
-                    {orderDetails.product.naziv}
-                  </chakra.Text>
-                )}
-
-                {orderDetails.service && (
-                  <chakra.Text
-                    w={"full"}
-                    mx={{ base: 2, md: 4 }}
-                    fontSize={{ base: "lg", md: "2xl" }}
-                    textAlign={"center"}
-                  >
-                    {orderDetails.service.naziv}
-                  </chakra.Text>
-                )}
-
-                {isDetailsEditMode && (
-                  <chakra.IconButton
-                    icon={<MinusIcon />}
-                    aria-label="Minus"
-                    onClick={(event) => {
-                      if (orderDetails.quantity > 0)
-                        updateItemQuantity(orderDetails.indexInOrder, -1);
-                    }}
-                  />
-                )}
-
-                <chakra.Text
-                  w={"full"}
-                  mx={{ base: 2, md: 4 }}
-                  fontSize={{ base: "lg", md: "2xl" }}
-                  textAlign={"center"}
+      <Flex>
+        <chakra.UnorderedList w={"full"}>
+          {orderDetails
+            .filter((details) => {
+              return details.quantity > 0;
+            })
+            .map((orderDetails) => {
+              return (
+                <chakra.Box
+                  key={orderDetails.offerId}
+                  as={chakra.Flex}
+                  align={"center"}
+                  justify={"center"}
+                  p={{ base: 2, md: 8 }}
                 >
-                  Kolicina: {orderDetails.quantity}
-                </chakra.Text>
+                  {orderDetails.product && (
+                    <chakra.Text
+                      w={"full"}
+                      mx={{ base: 2, md: 4 }}
+                      fontSize={{ base: "lg", md: "2xl" }}
+                      textAlign={"center"}
+                    >
+                      {orderDetails.product.naziv}
+                    </chakra.Text>
+                  )}
 
-                {isDetailsEditMode && (
-                  <chakra.IconButton
-                    icon={<AddIcon />}
-                    aria-label="Plus"
-                    onClick={(event) => {
-                      updateItemQuantity(orderDetails.indexInOrder, 1);
-                    }}
-                  />
-                )}
-              </chakra.Box>
-            );
-          })}
-      </chakra.UnorderedList>
-      <chakra.Flex
-        align={"center"}
-        justify={"center"}
-        direction={{ base: "column" }}
-      >
+                  {orderDetails.service && (
+                    <chakra.Text
+                      w={"full"}
+                      mx={{ base: 2, md: 4 }}
+                      fontSize={{ base: "lg", md: "2xl" }}
+                      textAlign={"center"}
+                    >
+                      {orderDetails.service.naziv}
+                    </chakra.Text>
+                  )}
+
+                  {isDetailsEditMode && (
+                    <chakra.IconButton
+                      icon={<MinusIcon />}
+                      aria-label="Minus"
+                      onClick={(event) => {
+                        if (orderDetails.quantity > 0)
+                          updateItemQuantity(orderDetails.indexInOrder, -1);
+                      }}
+                    />
+                  )}
+
+                  <chakra.Text
+                    w={"full"}
+                    mx={{ base: 2, md: 4 }}
+                    fontSize={{ base: "lg", md: "2xl" }}
+                    textAlign={"center"}
+                  >
+                    Kolicina: {orderDetails.quantity}
+                  </chakra.Text>
+
+                  {isDetailsEditMode && (
+                    <chakra.IconButton
+                      icon={<AddIcon />}
+                      aria-label="Plus"
+                      onClick={(event) => {
+                        updateItemQuantity(orderDetails.indexInOrder, 1);
+                      }}
+                    />
+                  )}
+                </chakra.Box>
+              );
+            })}
+        </chakra.UnorderedList>
+      </Flex>
+      <Flex>
         {addedOrderDetails.size > 0 && (
-          <chakra.UnorderedList>
+          <chakra.UnorderedList w={"full"} spacing={4}>
             {Array.from(addedOrderDetails!)
               .filter(([id, detail]) => {
                 return detail.kolicina > 0;
@@ -197,35 +196,54 @@ export const DetailsBox = ({
                     justify={"center"}
                     p={{ base: 2, md: 8 }}
                   >
-                    <chakra.IconButton
-                      icon={<MinusIcon />}
-                      aria-label="Minus"
-                      onClick={(event) => {
-                        if (detail.kolicina > 0)
-                          updateAddedOrderDetails(id, -1);
-                      }}
-                    />
                     <chakra.Text
                       w={"full"}
                       mx={{ base: 2, md: 4 }}
                       fontSize={{ base: "lg", md: "2xl" }}
                       textAlign={"center"}
                     >
-                      {availableItems!.get(id)?.name}: {detail.kolicina}
+                      {availableItems!.get(id)?.name}
                     </chakra.Text>
-                    <chakra.IconButton
-                      icon={<AddIcon />}
-                      aria-label="Plus"
-                      onClick={(event) => {
-                        updateAddedOrderDetails(id, 1);
-                      }}
-                    />
+                    {isDetailsEditMode && (
+                      <chakra.IconButton
+                        icon={<MinusIcon />}
+                        aria-label="Minus"
+                        onClick={(event) => {
+                          if (detail.kolicina > 0)
+                            updateAddedOrderDetails(id, -1);
+                        }}
+                      />
+                    )}
+
+                    <chakra.Text
+                      w={"full"}
+                      mx={{ base: 2, md: 4 }}
+                      fontSize={{ base: "lg", md: "2xl" }}
+                      textAlign={"center"}
+                    >
+                      Kolicina: {detail.kolicina}
+                    </chakra.Text>
+                    {isDetailsEditMode && (
+                      <chakra.IconButton
+                        icon={<AddIcon />}
+                        aria-label="Plus"
+                        onClick={(event) => {
+                          updateAddedOrderDetails(id, 1);
+                        }}
+                      />
+                    )}
                   </chakra.Box>
                 );
               })}
           </chakra.UnorderedList>
         )}
+      </Flex>
 
+      <chakra.Flex
+        align={"center"}
+        justify={"center"}
+        direction={{ base: "column" }}
+      >
         <form>
           {isDetailsEditMode && availableItems.size > 0 && (
             <chakra.FormControl mt={6}>

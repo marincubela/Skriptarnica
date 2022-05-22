@@ -1,9 +1,10 @@
-import { EditIcon } from "@chakra-ui/icons";
+import { CheckIcon, DeleteIcon, EditIcon } from "@chakra-ui/icons";
 import { Button, Collapse, IconButton, Stack } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { Employee } from "../../models/Employee";
 import { Order } from "../../models/Order";
 import { OrderDetails } from "../../models/OrderDetails";
+import { deleteOrder, updateOrder } from "../../service/OrdersService";
 import { fetchOrderDetails } from "../../source/details/OrderDetailsSource";
 import { EditableInfoLabel } from "../util/EditableInfoLabel";
 import { InfoLabel } from "../util/InfoLabel";
@@ -12,23 +13,52 @@ import { DetailsBox } from "./DetailsBox";
 export const MasterBox = ({
   order,
   employees,
+  onUpdate,
 }: MasterBoxProps): JSX.Element => {
   const [isOpen, setIsOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
+  const [employeeMap, setEmployeeMap] = useState<Map<number, string>>();
 
   const [details, setDetails] = useState<Array<OrderDetails>>([]);
 
-  const employeeMap = new Map<number, string>(
-    employees.map((employee) => {
-      return [employee.id, `${employee.name} ${employee.lastName}`];
-    })
-  );
-
   useEffect(() => {
+    let employeeMap = new Map<number, string>(
+      employees.map((employee) => {
+        return [employee.id, `${employee.name} ${employee.lastName}`];
+      })
+    );
+
+    setEmployeeMap(employeeMap);
+
     fetchOrderDetails(order.id as number).then((details) => {
       setDetails(details);
     });
   }, []);
+
+  const handleEmployeeChange = (id: number) => {
+    order.workerId = id as Number;
+  };
+
+  const handleEditChange = () => {
+    if (isEditMode) {
+      updateOrder(order.workerId.toString(), order.id as number)
+        .catch((err) => console.log(err))
+        .finally(() => {
+          setIsEditMode(false);
+          onUpdate();
+        });
+    } else {
+      setIsEditMode(true);
+    }
+  };
+
+  const handleDelete = () => {
+    deleteOrder(order.id as number)
+      .catch((err) => console.log(err))
+      .finally(() => {
+        onUpdate();
+      });
+  };
 
   return (
     <Stack direction={"column"} spacing={2} border={"2px"} borderRadius={"2xl"}>
@@ -54,13 +84,17 @@ export const MasterBox = ({
           label="Jedinsveni kod"
           value={order.trackingCode.toString()}
         />
-        <EditableInfoLabel
-          label="Djelatnik"
-          value={employeeMap.get(order.workerId as number)!}
-          isEditMode={isEditMode}
-          onUpdateValue={(value: Number) => console.log(value)}
-          options={employeeMap}
-        />
+        {employeeMap && (
+          <EditableInfoLabel
+            label="Djelatnik"
+            value={employeeMap.get(order.workerId as number)!}
+            isEditMode={isEditMode}
+            onUpdateValue={(value: Number) =>
+              handleEmployeeChange(value as number)
+            }
+            options={employeeMap}
+          />
+        )}
       </Stack>
       <Stack align={"center"} justify={"center"} direction={"row"} py={2}>
         <Button
@@ -73,9 +107,16 @@ export const MasterBox = ({
         <IconButton
           variant={"solid"}
           size={"lg"}
-          icon={<EditIcon />}
+          icon={isEditMode ? <CheckIcon /> : <EditIcon />}
           aria-label="Edit icon"
-          onClick={() => setIsEditMode(!isEditMode)}
+          onClick={() => handleEditChange()}
+        />
+        <IconButton
+          variant={"solid"}
+          size={"lg"}
+          icon={<DeleteIcon />}
+          aria-label="Delete icon"
+          onClick={() => handleDelete()}
         />
       </Stack>
       <Collapse in={isOpen} animateOpacity>
@@ -90,4 +131,5 @@ export const MasterBox = ({
 type MasterBoxProps = {
   order: Order;
   employees: Array<Employee>;
+  onUpdate: () => void;
 };

@@ -19,7 +19,7 @@ export const EditableInfoLabel = ({
             onChange={(event) => onUpdateValue(event.target.value)}
           >
             {Array.from(options).map(([id, name]) => {
-              return <option value={id}>{name}</option>;
+              return <option key={id} value={id}>{name}</option>;
             })}
           </Select>
         </Box>

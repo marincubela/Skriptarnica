@@ -1,5 +1,6 @@
 import { AddIcon, MinusIcon } from "@chakra-ui/icons";
 import * as react from "@chakra-ui/react";
+import { ScaleFade } from "@chakra-ui/react";
 import { FunctionComponent, useEffect, useState } from "react";
 import { AvailableItem } from "../../models/AvailableItem";
 import { Employee } from "../../models/Employee";
@@ -59,7 +60,11 @@ export const OrderForm: FunctionComponent = () => {
       return;
     }
 
-    if (selectedItems?.size == 0) {
+    if (
+      Array.from(selectedItems).filter(([id, quantity]) => {
+        return quantity > 0;
+      }).length === 0
+    ) {
       handleError("Morate unijeti barem 1 proizvod!");
       return;
     }
@@ -115,6 +120,7 @@ export const OrderForm: FunctionComponent = () => {
               <react.FormControl mt={6} isRequired>
                 <react.FormLabel>Djelatnik</react.FormLabel>
                 <react.Select
+                  placeholder="Odaberite djelatnika"
                   onChange={(event) =>
                     handleEmployeeChange(JSON.parse(event.target.value))
                   }
@@ -137,6 +143,7 @@ export const OrderForm: FunctionComponent = () => {
               <react.FormControl mt={6} isRequired>
                 <react.FormLabel>Proizvod</react.FormLabel>
                 <react.Select
+                  placeholder="Odaberite proizvod"
                   onChange={(event) =>
                     updateItemQuantity(parseInt(event.target.value), 1)
                   }
@@ -152,8 +159,10 @@ export const OrderForm: FunctionComponent = () => {
               </react.FormControl>
             )}
           </react.Flex>
-          <react.Flex flex={1} align={"center"} justify={"center"}>
-            {selectedItems.size > 0 && (
+          {Array.from(selectedItems!).filter(([id, quantity]) => {
+            return quantity > 0;
+          }).length > 0 && (
+            <react.Flex flex={1} align={"center"} justify={"center"}>
               <react.UnorderedList>
                 {Array.from(selectedItems!)
                   .filter(([id, quantity]) => {
@@ -194,12 +203,16 @@ export const OrderForm: FunctionComponent = () => {
                     );
                   })}
               </react.UnorderedList>
-            )}
-          </react.Flex>
+            </react.Flex>
+          )}
         </react.Stack>
-        {errorMessage.length > 0 && (
+        <ScaleFade
+          in={errorMessage.length > 0}
+          reverse={true}
+          initialScale={0.9}
+        >
           <react.Heading color={"red.600"}>{errorMessage}</react.Heading>
-        )}
+        </ScaleFade>
         <react.Button width="full" mt={4} type="submit">
           Dodaj narudžbu
         </react.Button>

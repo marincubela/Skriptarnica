@@ -43,7 +43,7 @@ export const MasterDetail: React.FunctionComponent = () => {
       {orders.length > 0 && (
         <chakra.Stack direction={"column"} px={8}>
           {orders.map((order) => (
-            <MasterBox order={order} employees={employees} />
+            <MasterBox order={order} employees={employees} onUpdate={() => window.location.reload()} />
           ))}
         </chakra.Stack>
       )}
