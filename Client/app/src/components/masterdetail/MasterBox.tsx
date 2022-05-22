@@ -1,17 +1,13 @@
 import { EditIcon } from "@chakra-ui/icons";
-import {
-  Box,
-  Button,
-  Collapse,
-  Heading,
-  IconButton,
-  Stack,
-} from "@chakra-ui/react";
-import { useState } from "react";
+import { Button, Collapse, IconButton, Stack } from "@chakra-ui/react";
+import { useEffect, useState } from "react";
 import { Employee } from "../../models/Employee";
 import { Order } from "../../models/Order";
+import { OrderDetails } from "../../models/OrderDetails";
+import { fetchOrderDetails } from "../../source/details/OrderDetailsSource";
 import { EditableInfoLabel } from "../util/EditableInfoLabel";
 import { InfoLabel } from "../util/InfoLabel";
+import { DetailsBox } from "./DetailsBox";
 
 export const MasterBox = ({
   order,
@@ -20,13 +16,19 @@ export const MasterBox = ({
   const [isOpen, setIsOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
 
+  const [details, setDetails] = useState<Array<OrderDetails>>([]);
+
   const employeeMap = new Map<number, string>(
     employees.map((employee) => {
       return [employee.id, `${employee.name} ${employee.lastName}`];
     })
   );
 
-  console.log(order);
+  useEffect(() => {
+    fetchOrderDetails(order.id as number).then((details) => {
+      setDetails(details);
+    });
+  }, []);
 
   return (
     <Stack direction={"column"} spacing={2} border={"2px"} borderRadius={"2xl"}>
@@ -77,9 +79,9 @@ export const MasterBox = ({
         />
       </Stack>
       <Collapse in={isOpen} animateOpacity>
-        <Box>
-          <Heading>Hello</Heading>
-        </Box>
+        {details.length > 0 && (
+          <DetailsBox details={details} orderId={order.id as number} />
+        )}
       </Collapse>
     </Stack>
   );
