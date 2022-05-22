@@ -1,5 +1,7 @@
 package hr.unizg.fer.infsus.skriptarnica.controller;
 
+import hr.unizg.fer.infsus.skriptarnica.dto.NewNarudzbaDto;
+import hr.unizg.fer.infsus.skriptarnica.dto.UpdateIdOsobaDto;
 import hr.unizg.fer.infsus.skriptarnica.model.Narudzba;
 import hr.unizg.fer.infsus.skriptarnica.model.StavkaNarudzba;
 import hr.unizg.fer.infsus.skriptarnica.service.INarudzbaService;
@@ -8,9 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @RestController
@@ -73,8 +73,22 @@ public class NarudzbaController {
         }
     }
 
+    @PutMapping("/update-osoba/{Id}")
+    public ResponseEntity<Narudzba> updateWorker(@RequestBody UpdateIdOsobaDto updateIdOsobaDto, @PathVariable Long Id) {
+        Narudzba updatedNarudzba = narudzbaService.find(Id);
+        if (updatedNarudzba == null) {
+            return ResponseEntity.notFound().build();
+        } else {
+            updatedNarudzba.setOsobaid(updateIdOsobaDto.getNoviIdOsoba());
+            var n = narudzbaService.save(updatedNarudzba);
+            return ResponseEntity.ok(n);
+        }
+    }
+
+
     @DeleteMapping("/{Id}")
     void deleteNarudzba(@PathVariable Long Id) {
         narudzbaService.deleteById(Id);
     }
 }
+
