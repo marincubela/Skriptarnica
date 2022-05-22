@@ -1,4 +1,4 @@
-package hr.unizg.fer.infsus.skriptarnica.controller;
+package hr.unizg.fer.infsus.skriptarnica.dto;
 
 import hr.unizg.fer.infsus.skriptarnica.model.Narudzba;
 import hr.unizg.fer.infsus.skriptarnica.model.StavkaNarudzba;
@@ -19,7 +19,7 @@ public class NewNarudzbaDto {
         this.stavkaNarudzbas = stavkaNarudzbas;
     }
 
-    Narudzba toNarudzba() {
+    public Narudzba toNarudzba() {
         return new Narudzba(this.status, this.emailkupac, this.osobaid);
     }
 
