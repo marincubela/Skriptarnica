@@ -56,7 +56,7 @@ public class StavkaNarudzbaController {
         return stavkaNarudzbaService.save(newStavkaNarudzba);
     }
 
-    @PutMapping("/")
+    @PutMapping("/update")
     public List<StavkaNarudzba> update(@RequestBody List<StavkaNarudzba> list) {
         List<StavkaNarudzba> result = new ArrayList<>();
 
@@ -71,7 +71,7 @@ public class StavkaNarudzbaController {
         return result;
     }
 
-    @DeleteMapping("/")
+    @DeleteMapping("/delete")
     @Transactional
     public long deleteProizvod(@RequestBody StavkaNarudzbaId Id) {
         return stavkaNarudzbaService.deleteStavkaNarudzbaByNarudzbaidAndRbrstavka(Id.getNarudzbaid(), Id.getRbrstavka());
