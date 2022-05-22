@@ -17,9 +17,9 @@ export const EditableInfoLabel = ({
             variant={"outline"}
             onChange={(event) => onUpdateValue(event.target.value)}
           >
-            {options.map((option) => (
-              <option value={option}>{option}</option>
-            ))}
+            {Array.from(options).map(([id, name]) => {
+              return <option value={id}>{name}</option>;
+            })}
           </Select>
         </Box>
       )}
@@ -29,9 +29,9 @@ export const EditableInfoLabel = ({
 };
 
 type EditInfoLabelProps = {
-  label: String;
-  value: String | Number;
+  label: string;
+  value: string | number;
   isEditMode: Boolean;
   onUpdateValue: Function;
-  options: Array<number>;
+  options: Map<number, string>;
 };

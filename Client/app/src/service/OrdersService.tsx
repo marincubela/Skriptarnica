@@ -1,67 +1,34 @@
 import axios from "axios";
+import { Status } from "../api/models/ApiOrder";
+import { Employee } from "../models/Employee";
+import { SelectedItem } from "../models/SelectedItem";
 
-export enum Status {
-  "Zaprimljeno",
-  "U tijeku",
-  "Otkazano",
-}
+export const addNewOrder = async (
+  email: string,
+  selectedEmployee: Employee,
+  selectedItems: Array<SelectedItem>
+): Promise<boolean> => {
+  let response = await axios.post(
+    "/narudzba/add",
+    toNaruzbaDto(email, selectedEmployee, selectedItems)
+  );
 
-export interface Order {
-  id: Number;
-  status: Status;
-  orderDate: Date;
-  orderReadyDate: Date | null;
-  orderExecutedDate: Date | null;
-  buyerEmail: String;
-  trackingCode: Number;
-  workerId: Number;
-}
+  if (response.status === 200) {
+    return response.data;
+  }
 
-const fakeOrders: Array<Order> = [
-  {
-    id: 1,
-    status: Status["U tijeku"],
-    orderDate: new Date(),
-    orderReadyDate: new Date(),
-    orderExecutedDate: null,
-    buyerEmail: "email@gma.com",
-    trackingCode: 1234,
-    workerId: 1,
-  },
-  {
-    id: 2,
-    status: Status["Zaprimljeno"],
-    orderDate: new Date(),
-    orderReadyDate: new Date(),
-    orderExecutedDate: null,
-    buyerEmail: "email123@gma.com",
-    trackingCode: 1234353,
-    workerId: 2,
-  },
-  {
-    id: 3,
-    status: Status["Otkazano"],
-    orderDate: new Date(),
-    orderReadyDate: new Date(),
-    orderExecutedDate: null,
-    buyerEmail: "email@gmadsa.com",
-    trackingCode: 121232134,
-    workerId: 2,
-  },
-  {
-    id: 4,
-    status: Status["U tijeku"],
-    orderDate: new Date(),
-    orderReadyDate: new Date(),
-    orderExecutedDate: null,
-    buyerEmail: "email@gma2323.com",
-    trackingCode: 123424124,
-    workerId: 1,
-  },
-];
+  return false;
+};
 
-export const fetchOrders = async (): Promise<Array<Order>> => {
-    return new Promise((resolve, reject) => {
-        resolve(fakeOrders)
-    })
+const toNaruzbaDto = (
+  email: string,
+  selectedEmployee: Employee,
+  selectedItems: Array<SelectedItem>
+) => {
+  return {
+    emailkupac: email,
+    status: Status.IN_PROGRESS,
+    osobaid: selectedEmployee.id,
+    stavkaNarudzbas: selectedItems,
+  };
 };
