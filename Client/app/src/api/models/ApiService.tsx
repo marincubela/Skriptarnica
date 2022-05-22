@@ -1,4 +1,4 @@
-export type ApiService = {
+export type ApiServiceItem = {
   ponudaid: number;
   naziv: string;
   jedcijena: number;

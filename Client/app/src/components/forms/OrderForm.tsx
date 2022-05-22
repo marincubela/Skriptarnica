@@ -37,7 +37,6 @@ export const OrderForm: FunctionComponent = () => {
   }, []);
 
   const handleError = (message: string) => {
-    console.log(message);
     setErrorMessage(message);
 
     setTimeout(() => {

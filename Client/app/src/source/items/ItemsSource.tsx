@@ -1,6 +1,6 @@
 import axios from "axios";
 import { ApiProduct } from "../../api/models/ApiProduct";
-import { ApiService } from "../../api/models/ApiService";
+import { ApiServiceItem } from "../../api/models/ApiService";
 import {
   AvailableItem,
   AvailableProduct,
@@ -31,7 +31,7 @@ export const fetchItems = async (): Promise<Array<AvailableItem>> => {
         )
       )
       .concat(
-        Array.from<ApiService>(serviceResponse.data).map(
+        Array.from<ApiServiceItem>(serviceResponse.data).map(
           (apiProduct): AvailableService => {
             return {
               id: apiProduct.ponudaid,

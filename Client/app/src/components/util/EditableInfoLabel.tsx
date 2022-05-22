@@ -8,6 +8,7 @@ export const EditableInfoLabel = ({
   onUpdateValue,
   options,
 }: EditInfoLabelProps) => {
+
   return (
     <>
       {isEditMode && (
