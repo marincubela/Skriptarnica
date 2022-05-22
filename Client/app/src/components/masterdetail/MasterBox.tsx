@@ -8,16 +8,25 @@ import {
   Stack,
 } from "@chakra-ui/react";
 import { useState } from "react";
-import { Order } from "../../service/OrdersService";
+import { Employee } from "../../models/Employee";
+import { Order } from "../../models/Order";
 import { EditableInfoLabel } from "../util/EditableInfoLabel";
 import { InfoLabel } from "../util/InfoLabel";
 
 export const MasterBox = ({
   order,
-  workerIdOptions,
+  employees,
 }: MasterBoxProps): JSX.Element => {
   const [isOpen, setIsOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
+
+  const employeeMap = new Map<number, string>(
+    employees.map((employee) => {
+      return [employee.id, `${employee.name} ${employee.lastName}`];
+    })
+  );
+
+  console.log(order);
 
   return (
     <Stack direction={"column"} spacing={2} border={"2px"} borderRadius={"2xl"}>
@@ -29,7 +38,7 @@ export const MasterBox = ({
         <InfoLabel label="Kupac email" value={order.buyerEmail} />
         <InfoLabel
           label="Datum narudžbe"
-          value={order.orderDate?.toLocaleDateString() ?? "Nepoznato"}
+          value={order.orderDate.toLocaleDateString() ?? "Nepoznato"}
         />
         <InfoLabel
           label="Datum isporuke"
@@ -44,11 +53,11 @@ export const MasterBox = ({
           value={order.trackingCode.toString()}
         />
         <EditableInfoLabel
-          label="Djelatnik Id"
-          value={order.workerId}
+          label="Djelatnik"
+          value={employeeMap.get(order.workerId as number)!}
           isEditMode={isEditMode}
           onUpdateValue={(value: Number) => console.log(value)}
-          options={workerIdOptions}
+          options={employeeMap}
         />
       </Stack>
       <Stack align={"center"} justify={"center"} direction={"row"} py={2}>
@@ -78,5 +87,5 @@ export const MasterBox = ({
 
 type MasterBoxProps = {
   order: Order;
-  workerIdOptions: Array<number>;
+  employees: Array<Employee>;
 };

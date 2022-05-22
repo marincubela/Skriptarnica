@@ -3,6 +3,8 @@ import * as react from "@chakra-ui/react";
 import { FunctionComponent, useEffect, useState } from "react";
 import { AvailableItem } from "../../models/AvailableItem";
 import { Employee } from "../../models/Employee";
+import { SelectedItem } from "../../models/SelectedItem";
+import { addNewOrder } from "../../service/OrdersService";
 import { fetchEmployees } from "../../source/employee/EmployeeSource";
 import { fetchItems } from "../../source/items/ItemsSource";
 
@@ -63,11 +65,21 @@ export const OrderForm: FunctionComponent = () => {
       return;
     }
 
-    console.log(
-      `Email: ${email}, Djelatnik: ${JSON.stringify(
-        selectedEmployee
-      )}, Proizvodi: ${JSON.stringify([...selectedItems!])}`
-    );
+    let mappedSelectedItems: Array<SelectedItem> = Array.from(selectedItems)
+      .filter(([id, quantity]) => {
+        return quantity > 0;
+      })
+      .map(([id, quantity]) => {
+        return {
+          ponudaid: id,
+          kolicina: quantity,
+          jedcijena: availableItems.get(id)!.unitPrice,
+        };
+      });
+
+    addNewOrder(email, selectedEmployee, mappedSelectedItems)
+      .then((data) => window.location.reload())
+      .catch((err) => console.log(err));
   };
 
   const handleEmployeeChange = (employee: Employee) => {
@@ -110,7 +122,10 @@ export const OrderForm: FunctionComponent = () => {
                 >
                   {employees.map((employee) => {
                     return (
-                      <option value={JSON.stringify(employee)}>
+                      <option
+                        key={employee.id}
+                        value={JSON.stringify(employee)}
+                      >
                         {employee.name} {employee.lastName}
                       </option>
                     );
@@ -127,8 +142,12 @@ export const OrderForm: FunctionComponent = () => {
                     updateItemQuantity(parseInt(event.target.value), 1)
                   }
                 >
-                  {Array.from(availableItems!).map(([id, item]) => {
-                    return <option value={id}>{item.name}</option>;
+                  {Array.from(availableItems).map(([id, item]) => {
+                    return (
+                      <option key={id} value={id}>
+                        {item.name} / {item.unitPrice} kn
+                      </option>
+                    );
                   })}
                 </react.Select>
               </react.FormControl>
@@ -144,6 +163,7 @@ export const OrderForm: FunctionComponent = () => {
                   .map(([id, quantity]) => {
                     return (
                       <react.Box
+                        key={id}
                         as={react.Flex}
                         align={"center"}
                         justify={"center"}
@@ -158,7 +178,7 @@ export const OrderForm: FunctionComponent = () => {
                         />
                         <react.Text
                           w={"full"}
-                          mx={{base: 2, md: 4}}
+                          mx={{ base: 2, md: 4 }}
                           fontSize={{ base: "lg", md: "2xl" }}
                           textAlign={"center"}
                         >
