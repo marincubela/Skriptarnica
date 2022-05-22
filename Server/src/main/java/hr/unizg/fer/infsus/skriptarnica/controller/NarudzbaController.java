@@ -1,12 +1,17 @@
 package hr.unizg.fer.infsus.skriptarnica.controller;
 
 import hr.unizg.fer.infsus.skriptarnica.model.Narudzba;
+import hr.unizg.fer.infsus.skriptarnica.model.StavkaNarudzba;
 import hr.unizg.fer.infsus.skriptarnica.service.INarudzbaService;
+import hr.unizg.fer.infsus.skriptarnica.service.IStavkaNarudzbaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @RestController
 @RequestMapping("/narudzba")
@@ -15,14 +20,35 @@ public class NarudzbaController {
     @Autowired
     private INarudzbaService narudzbaService;
 
+    @Autowired
+    private IStavkaNarudzbaService stavkaNarudzbaService;
+
     @GetMapping("/all")
     public List<Narudzba> findAllNarudzba() {
         return narudzbaService.findAll();
     }
 
-    @PostMapping("/")
-    Narudzba newNarudzba(@RequestBody Narudzba newNarudzba) {
-        return narudzbaService.save(newNarudzba);
+    @PostMapping("/add")
+    Narudzba newNarudzba(@RequestBody NewNarudzbaDto newNarudzbaDto) {
+        try {
+            Narudzba newNarudzba = narudzbaService.save(newNarudzbaDto.toNarudzba());
+
+            long narudzbaId = newNarudzba.getNarudzbaid();
+            List<StavkaNarudzba> stavkaNarudzbas = newNarudzbaDto.getStavkaNarudzbas();
+
+            IntStream.range(0, stavkaNarudzbas.size())
+                            .forEach(index -> {
+                                StavkaNarudzba stavkaNarudzba = stavkaNarudzbas.get(index);
+                                stavkaNarudzba.setNarudzbaid(narudzbaId);
+                                stavkaNarudzba.setRbrstavka((long) (index + 1));
+                                stavkaNarudzbaService.save(stavkaNarudzba);
+                            });
+
+            return newNarudzba;
+        } catch (Exception e) {
+            System.out.println(e);
+            return null;
+        }
     }
 
     @GetMapping("/{Id}")
