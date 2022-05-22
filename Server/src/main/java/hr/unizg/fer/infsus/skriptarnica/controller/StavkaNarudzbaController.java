@@ -49,8 +49,10 @@ public class StavkaNarudzbaController {
         return stavkaNarudzbaService.findAll();
     }
 
-    @PostMapping("/")
+    @PostMapping("/add")
     StavkaNarudzba addStavka(@RequestBody StavkaNarudzba newStavkaNarudzba) {
+        System.out.println("STAVKA");
+        System.out.println(newStavkaNarudzba);
         return stavkaNarudzbaService.save(newStavkaNarudzba);
     }
 

@@ -1,7 +1,9 @@
 package hr.unizg.fer.infsus.skriptarnica.model;
 
+import org.springframework.data.annotation.CreatedDate;
+
 import javax.persistence.*;
-import java.sql.Date;
+import java.util.Date;
 import java.util.Objects;
 
 @Entity
@@ -12,21 +14,17 @@ public class Narudzba {
     private Long narudzbaid;
 
     private String status;
-    private Date datumnarucen;
-    private Date datumspreman;
-    private Date datumizvrsen;
+
+    private Date datumnarucen = new Date();
+    private Date datumspreman = null;
+    private Date datumizvrsen = null;
     private String emailkupac;
-    private Long jedinstvenikod;
+    private Long jedinstvenikod = System.currentTimeMillis();
     private Long osobaid;
 
-    public Narudzba(Long narudzbaid, String status, Date datumnarucen, String emailkupac, Long jedinstvenikod, Long osobaid) {
-        this.narudzbaid = narudzbaid;
+    public Narudzba(String status, String emailkupac, Long osobaid) {
         this.status = status;
-        this.datumnarucen = datumnarucen;
-        this.datumspreman = null;
-        this.datumizvrsen = null;
         this.emailkupac = emailkupac;
-        this.jedinstvenikod = jedinstvenikod;
         this.osobaid = osobaid;
     }
 
